@@ -8,19 +8,34 @@ function NewAnimalForm({ animals, setAnimals }) {
     const handleChangeName = (event) => setName(event.target.value)
     const handleChangeImage = (event) => setImage(event.target.value)
 
-    function handleSubmit(event) {
+    function formReset(){
+        setName("")
+        setImage("")
+    }
+
+    async function handleSubmit(event) {
         event.preventDefault()
 
-        const newAnimal = {
-            name,
-            image,
-            likes: 0
-        }
+        const newAnimal = {name, image, likes: 0}
 
-        const updatedAnimals = [...animals, newAnimal]
+        try{
+        const response = await fetch('http://localhost:3000/animals', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json', 'Accept' : 'application/json' },
+            body: JSON.stringify(newAnimal)
+        })
+
+        const data =  await response.json() 
+        
+        const updatedAnimals = [...animals, data]
 
         setAnimals(updatedAnimals)
+        formReset()
+    } catch (error){
+        console.warn(error)
+        alert("Something went wrong...")
     }
+}
 
     return (
         <div className="form-container">
